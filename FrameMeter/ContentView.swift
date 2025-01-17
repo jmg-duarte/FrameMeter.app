@@ -17,6 +17,8 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
+            Text("\(activeIndex + 1)")
+            
             LazyVStack(spacing: 4) {
                 ForEach(0 ..< totalRectangles, id: \.self) { index in
                     Rectangle()
@@ -28,20 +30,38 @@ struct ContentView: View {
             }
             .padding()
 
-            // Start Button
-            Button(action: {
-                withAnimation(.none) {
-                    toggleChronometer()
+            HStack {
+                Button(action: {
+                    withAnimation(.none) {
+                        toggleChronometer()
+                    }
+                }) {
+                    Text(isRunning ? "Stop" : "Start")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(isRunning ? Color.red : Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .animation(nil, value: isRunning)
                 }
-            }) {
-                Text(isRunning ? "Stop" : "Start")
-                    .padding()
-                    .background(isRunning ? Color.red : Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .animation(nil, value: isRunning)
+                .animation(nil, value: isRunning)
+
+                
+                Button(action: {
+                    withAnimation(.none) {
+                        stopChronometer()
+                        activeIndex = -1
+                    }
+                }) {
+                    Text("Reset")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.gray)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
             }
-            .animation(nil, value: isRunning)
+            .padding(.horizontal)
         }
     }
     
