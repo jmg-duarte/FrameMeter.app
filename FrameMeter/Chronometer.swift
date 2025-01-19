@@ -22,7 +22,7 @@ import SwiftUI
     private(set) var currentFrame = 0
     private(set) var currentCycle = 0
     
-    private var isRunning = false
+    private(set) var isRunning = false
     
     func toggle() {
         if isRunning {

@@ -8,13 +8,6 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var activeIndex = -1 // Tracks which rectangle to light up
-    @State private var timer: Timer? // Timer to control the sequence
-    @State private var isRunning = false // Button state
-
-    @State private var totalCycles = 0
-    @State private var activeCycle = -1
-
     @State private var chronometer: Chronometer = .init()
     
     private let barSpacing = 4.0
@@ -24,12 +17,18 @@ struct ContentView: View {
 
     var TopLabel: some View {
         HStack {
-            Text("\(chronometer.totalCycles)")
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            Text("+")
-            Text("\(chronometer.currentFrame)")
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }.font(.system(size: 24, design: .monospaced))
+            HStack {
+                Text("\(chronometer.totalCycles)")
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                Text("+")
+                    .frame(alignment: .center)
+                Text("\(chronometer.currentFrame)")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            
+
+        }
+        .font(.system(size: 24, design: .monospaced))
     }
 
     var ToggleButton: some View {
@@ -38,15 +37,15 @@ struct ContentView: View {
                 chronometer.toggle()
             }
         }) {
-            Text(isRunning ? "Stop" : "Start")
+            Text(chronometer.isRunning ? "Stop" : "Start")
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(isRunning ? Color.red : Color.green)
+                .background(chronometer.isRunning ? Color.red : Color.green)
                 .foregroundColor(.white)
                 .cornerRadius(10)
-                .animation(nil, value: isRunning)
+                .animation(nil, value: chronometer.isRunning)
         }
-        .animation(nil, value: isRunning)
+        .animation(nil, value: chronometer.isRunning)
     }
 
     var ResetButton: some View {
@@ -73,7 +72,7 @@ struct ContentView: View {
             TopLabel
 
             GeometryReader { geometry in
-                HStack {
+                HStack(spacing: barSpacing ) {
                     VStack(spacing: barSpacing) {
                         ForEach(0 ..< totalRectanglesCycles, id: \.self) { index in
                             Rectangle()
@@ -82,7 +81,6 @@ struct ContentView: View {
                                 .frame(height: calculateHeight(height: geometry.size.height, spacing: barSpacing, numberElements: totalRectanglesCycles))
                         }
                     }
-                    .padding(.bottom)
 
                     VStack(spacing: barSpacing) {
                         ForEach(0 ..< totalRectangles, id: \.self) { index in
@@ -92,10 +90,11 @@ struct ContentView: View {
                                 .frame(height: calculateHeight(height: geometry.size.height, spacing: barSpacing, numberElements: totalRectangles))
                         }
                     }
-                    .padding(.bottom)
                 }
+                
             }
             .frame(maxHeight: .infinity)
+            .clipShape(.rect(cornerRadius: 8))
             
             HStack {
                 ToggleButton
