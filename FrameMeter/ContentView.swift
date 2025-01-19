@@ -16,6 +16,8 @@ struct ContentView: View {
     @State private var activeCycle = -1
 
     @State private var chronometer: Chronometer = .init()
+    
+    private let barSpacing = 4.0
 
     let totalRectangles = 24
     let totalRectanglesCycles = 12
@@ -29,7 +31,7 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }.font(.system(size: 24, design: .monospaced))
     }
-    
+
     var ToggleButton: some View {
         Button(action: {
             withAnimation(.none) {
@@ -62,32 +64,39 @@ struct ContentView: View {
         }
     }
     
+    func calculateHeight(height: Double, spacing: Double, numberElements: Int) -> Double {
+        return (height - (spacing * Double(numberElements - 1))) / Double(numberElements)
+    }
+
     var body: some View {
         VStack {
             TopLabel
-            
-            HStack {
-                VStack(spacing: 4) {
-                    ForEach(0 ..< totalRectanglesCycles, id: \.self) { index in
-                        Rectangle()
-                            .fill((
-                                index < chronometer.currentCycle) ? Color.blue : Color.gray)
-                            .frame(height: 45)
-                    }
-                }
-                .padding(.bottom)
 
-                VStack(spacing: 4) {
-                    ForEach(0 ..< totalRectangles, id: \.self) { index in
-                        Rectangle()
-                            .fill((
-                                index < chronometer.currentFrame) ? Color.blue : Color.gray)
-                            .frame(height: 20)
+            GeometryReader { geometry in
+                HStack {
+                    VStack(spacing: barSpacing) {
+                        ForEach(0 ..< totalRectanglesCycles, id: \.self) { index in
+                            Rectangle()
+                                .fill((
+                                    index < chronometer.currentCycle) ? Color.blue : Color.gray)
+                                .frame(height: calculateHeight(height: geometry.size.height, spacing: barSpacing, numberElements: totalRectanglesCycles))
+                        }
                     }
+                    .padding(.bottom)
+
+                    VStack(spacing: barSpacing) {
+                        ForEach(0 ..< totalRectangles, id: \.self) { index in
+                            Rectangle()
+                                .fill((
+                                    index < chronometer.currentFrame) ? Color.blue : Color.gray)
+                                .frame(height: calculateHeight(height: geometry.size.height, spacing: barSpacing, numberElements: totalRectangles))
+                        }
+                    }
+                    .padding(.bottom)
                 }
-                .padding(.bottom)
             }
-
+            .frame(maxHeight: .infinity)
+            
             HStack {
                 ToggleButton
                 ResetButton
@@ -95,7 +104,6 @@ struct ContentView: View {
         }
         .padding(.horizontal)
     }
-
 }
 
 #Preview {
